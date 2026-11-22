@@ -709,26 +709,23 @@ async function advanceStep(p, id, finished, button) {
   }
 }
 function planDetails(p) {
-  const body = p.pages
-    .map(
-      (n) =>
-        "<tr><td>" +
-        n.seq +
-        "</td><td>" +
-        buildButton("edit-page", n.title, "record-name", n.id) +
-        "</td><td><code>" +
-        esc(n.path) +
-        "</code></td><td>" +
-        (n.keyword
-          ? buildButton("find-word", n.keyword, "text-button", n.id)
-          : "—") +
-        "</td><td>" +
-        esc(n.notes || "—") +
-        "</td><td>" +
-        esc(n.status) +
-        "</td></tr>",
-    )
-    .join("");
+  const body = p.pages.map((n) => {
+    const path = copyableValue("<code>" + esc(n.path) + "</code>", n.path, "页面路径");
+    const keyword = n.keyword
+      ? copyableValue(buildButton("find-word", n.keyword, "text-button", n.id), n.keyword, "关键词")
+      : "—";
+    const notes = n.notes
+      ? '<details class="plan-notes"><summary><span>' + esc(n.notes) + "</span></summary></details>"
+      : "—";
+    return '<tr><td class="plan-order">' + n.seq +
+      '</td><td class="plan-title" title="' + esc(n.title) + '">' +
+      buildButton("edit-page", n.title, "record-name", n.id) +
+      '</td><td class="plan-path">' + path +
+      '</td><td class="plan-keyword">' + keyword +
+      '</td><td class="plan-purpose">' + notes +
+      '</td><td class="plan-status"><span class="status" data-status="' + esc(n.status) + '">' +
+      esc(n.status) + "</span></td></tr>";
+  }).join("");
   return (
     '<div class="project-tools"><h3>一级页面 <small>' +
     p.pages.length +
@@ -738,8 +735,9 @@ function planDetails(p) {
     "</div></div>" +
     (body
       ? table(
-          ["导航顺序", "一级栏目", "页面路径", "主关键词", "页面用途", "状态"],
+          ["顺序", "一级栏目", "页面路径", "主关键词", "页面用途", "状态"],
           body,
+          "site-plan-table",
         )
       : '<p class="build-empty">还没有一级页面。点「添加一级页面」开始规划。</p>')
   );
