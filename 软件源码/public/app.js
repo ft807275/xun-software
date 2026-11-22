@@ -139,14 +139,48 @@ const btn = (action, label, cls = "secondary", extra = "") =>
   ">" +
   label +
   "</button>";
+function copyableValue(html, value, kind) {
+  if (!value) return html;
+  const label = esc("复制" + kind + " " + value);
+  return '<span class="copyable-value"><span>' + html + '</span>' +
+    btn("copy-value", "复制", "inline-copy", 'data-copy="' + esc(value) +
+      '" aria-label="' + label + '" title="' + label + '"') + '</span>';
+}
+
 const safeLink = (url, label) =>
   /^https?:\/\//i.test(url || "")
-    ? '<a href="' +
+    ? copyableValue('<a href="' +
       esc(url) +
       '" target="_blank" rel="noopener noreferrer">' +
       esc(label || url) +
-      "</a>"
+      "</a>", url, "网址")
     : esc(label || "—");
+
+async function copyValue(button) {
+  const value = button.dataset.copy;
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast("已复制");
+      return;
+    } catch {}
+  }
+  const buffer = document.createElement("textarea");
+  buffer.className = "clipboard-buffer";
+  buffer.value = value;
+  buffer.readOnly = true;
+  const dialog = $("#dialog");
+  (dialog.open ? dialog : document.body).append(buffer);
+  try {
+    buffer.focus({ preventScroll:true });
+    buffer.select();
+    if (!document.execCommand("copy")) throw Error("复制失败，请选中文字后复制。");
+    toast("已复制");
+  } finally {
+    buffer.remove();
+    button.focus({ preventScroll:true });
+  }
+}
 const option = (value, label, selected) =>
   '<option value="' +
   esc(value) +
@@ -904,6 +938,7 @@ async function load(position = null) {
       .map((w) => {
         const chineseOriginal = /\p{Script=Han}/u.test(w.term) && !/[\p{Script=Hiragana}\p{Script=Katakana}]/u.test(w.term);
         const chinese = w.translation || (chineseOriginal ? w.term : "");
+        const keyword = w.english || w.term;
         return '<tr><td class="check"><input type="checkbox" data-id="' +
           w.id +
           '" ' +
@@ -911,11 +946,11 @@ async function load(position = null) {
           'aria-label="选择 ' +
           esc(w.term) +
           '"></td><td>' +
-          btn("word", esc(w.english || w.term), "record-name", 'data-id="' + w.id + '"') +
+          copyableValue(btn("word", esc(keyword), "record-name", 'data-id="' + w.id + '"'), keyword, "关键词") +
           (w.english && w.english !== w.term && w.term !== chinese
-            ? '<small class="secondary-text">' + esc(w.term) + "</small>"
+            ? '<small class="secondary-text">' + copyableValue(esc(w.term), w.term, "关键词") + "</small>"
             : "") +
-          '</td><td>' + (chinese ? esc(chinese) : '<span class="secondary-text">待翻译</span>') +
+          '</td><td>' + (chinese ? copyableValue(esc(chinese), chinese, "中文翻译") : '<span class="secondary-text">待翻译</span>') +
           "</td><td>" +
           esc(typeName(w.product_type)) +
           (w.category
@@ -930,7 +965,7 @@ async function load(position = null) {
           "</td><td>" +
           esc(w.dr ?? "—") +
           "</td><td>" +
-          (w.url ? safeLink(w.url, w.domain || w.url) : esc(w.domain || "—")) +
+          (w.url ? safeLink(w.url, w.domain || w.url) : copyableValue(esc(w.domain || "—"), w.domain, "域名")) +
           (w.market ? '<small class="secondary-text">' + esc(marketLabel(w.market)) + '</small>' : "") +
           "</td></tr>";
       })
@@ -979,7 +1014,7 @@ async function load(position = null) {
                     'data-id="' + s.id + '"',
                   ) +
                   "</td><td>" +
-                  safeLink(s.url, s.domain) +
+                  (s.url ? safeLink(s.url, s.domain) : copyableValue(esc(s.domain), s.domain, "域名")) +
                   "</td><td>" +
                   esc(channelNames[s.audience]) +
                   " </td><td>" +
@@ -1089,8 +1124,9 @@ async function word(id, after = 0, scoped = view === "words" && Boolean(filt.bat
     "<p>" +
       badge(w.state) +
       "　" +
-      esc([w.english !== w.term ? w.english : "", w.translation !== w.term ? w.translation : "",
-        w.category, w.subtype].filter(Boolean).join(" / ")) +
+      [w.term, w.english, w.translation].filter((term, index, all) => term && all.indexOf(term) === index)
+        .map(term => copyableValue(esc(term), term, "关键词")).join("　") +
+      "</p><p>" + esc([w.category, w.subtype].filter(Boolean).join(" / ")) +
       "</p>" +
       (w.reason ? '<p class="inline-hint">' + esc(w.reason) + "</p>" : "") +
       '<div class="button-line">' +
@@ -2861,6 +2897,7 @@ document.addEventListener("click", async (e) => {
     }
     const a = t.dataset.action,
       id = Number(t.dataset.id);
+    if (a === "copy-value") return await copyValue(t);
     if (a === "site-coverage") {
       const status = t.dataset.coverage;
       if (status === (filt.keyword_status || "")) return;

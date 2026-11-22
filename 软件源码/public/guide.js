@@ -376,7 +376,7 @@ function mapKeywordSection(data) {
     const details = [main ? "主关键词" : "补充词", item.status, item.market,
       item.traffic == null ? "" : "自然流量 " + fmt(item.traffic),
       item.dr == null ? "" : "DR " + fmt(item.dr)].filter(Boolean).join(" · ");
-    return '<li><div><strong>' + title + '</strong><small>' + esc(details) + '</small></div><div class="step-actions">' +
+    return '<li><div><strong>' + copyableValue(title, item.keyword, "关键词") + '</strong><small>' + esc(details) + '</small></div><div class="step-actions">' +
       (item.id ? "" : buildButton("store-map-keyword", "加入行业词库", "secondary", index + 1)) +
       (main ? "" : buildButton("remove-map-keyword", "移除关联", "text-button", index + 1)) +
       '</div></li>';

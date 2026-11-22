@@ -475,6 +475,40 @@ select,
   font-weight: 500;
   white-space: nowrap;
 }
+.copyable-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+.copyable-value > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.copyable-value .inline-copy {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.copyable-value .inline-copy:hover {
+  background: #eef4ef;
+  color: #173b37;
+}
+.clipboard-buffer {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
 .record-name,
 .record-name button {
   color: #173b37;

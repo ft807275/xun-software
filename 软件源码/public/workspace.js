@@ -382,7 +382,7 @@ async function findWords(value) {
             g.rows
               .map(
                 (w) =>
-                  '<a href="' + base + "/" + w.id + '">' + esc(w.term) + "</a>",
+                  copyableValue('<a href="' + base + "/" + w.id + '">' + esc(w.term) + "</a>", w.term, "关键词"),
               )
               .join(" ") +
             '<p><a href="' +
