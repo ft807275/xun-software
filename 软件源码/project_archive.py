@@ -309,6 +309,12 @@ def receipt_lines(body):
     return lines
 
 
+def previous_project_names(db, project):
+    return tuple(row[0] for row in db.execute(
+        "SELECT name FROM build_project_names WHERE project=?", (project,),
+    ))
+
+
 def receipt(db, project, name, body):
     # Explicit final receipt only. Pasted prompts, examples in code blocks and old history never advance a step.
     lines = receipt_lines(body)
@@ -316,7 +322,7 @@ def receipt(db, project, name, body):
         match = re.fullmatch(
             r"【建站进度】\s*(.+?)\s*｜\s*(.+?)\s*｜\s*(进行中|已完成)", line
         )
-        if not match or match[1] != name:
+        if not match or (match[1] != name and match[1] not in previous_project_names(db, project)):
             continue
         step = db.execute(
             "SELECT id FROM build_steps WHERE project=? AND title=?",
@@ -651,7 +657,7 @@ def tracking_rules(p, steps, wiki=None):
     )
 
 
-def write_tracking_rules(directory, row, steps, wiki=None):
+def write_tracking_rules(directory, row, steps, wiki=None, previous_names=()):
     from tempfile import NamedTemporaryFile
 
     directory = directory.resolve()
@@ -669,7 +675,9 @@ def write_tracking_rules(directory, row, steps, wiki=None):
     old = re.search(
         r"\n?<!-- site-journal:begin -->.*?<!-- site-journal:end -->\n?", text, re.S
     )
-    if old and "为「" + row["name"] + "」实际建站" not in old.group():
+    if old and not any(
+        "为「" + name + "」实际建站" in old.group() for name in (row["name"], *previous_names)
+    ):
         raise ValueError("该文件夹已配置给另一网站，请选用该站独立的文件夹。")
     block = tracking_rules(row, steps, wiki)
     updated = (text[: old.start()] + block + text[old.end() :]) if old else text + block
@@ -712,7 +720,7 @@ def configure_wiki(db, project, enabled):
         raise ValueError("请先建立一页可接收更新的知识页。")
     steps = step_names(db, project)
     for directory in active:
-        write_tracking_rules(directory, p, steps, pages)
+        write_tracking_rules(directory, p, steps, pages, previous_project_names(db, project))
     stamp = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
     with db:
         db.execute(
@@ -749,6 +757,7 @@ def attach_workspace(db, project, directory):
     directory = write_tracking_rules(
         folder, row, step_names(db, project),
         knowledge.index(db, project) if enabled else None,
+        previous_project_names(db, project),
     )
     since = (
         datetime.now(timezone.utc)
@@ -941,7 +950,7 @@ def overview(root, prompts_only=False):
     results = []
     for industry, section, label, folder in folders(root):
         with closing(dbopen(folder)) as db:
-            for p in db.execute("SELECT id,name,site FROM build_projects ORDER BY id"):
+            for p in db.execute("SELECT id,name,site,version FROM build_projects ORDER BY id"):
                 steps = rows(
                     db,
                     "SELECT id,title,status FROM build_steps WHERE project=? ORDER BY seq,id",

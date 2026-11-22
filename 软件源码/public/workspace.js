@@ -174,9 +174,13 @@ function projectDirectory(projects, target) {
     const done = p.steps.filter(s => s.status === "已完成").length;
     const project = esc(base + "#buildhub/" + p.id);
     const search = esc([p.name, p.site, p.label].join(" ").toLowerCase());
+    const rename = btn("build-rename-project", "改名", "text-button directory-rename",
+      'data-id="' + p.id + '" data-version="' + p.version + '" data-name="' + esc(p.name) +
+      '" data-destination="' + p.section + "/" + p.industry + '" aria-label="' +
+      esc("修改「" + p.name + "」的名称") + '"');
     return '<article class="directory-project" data-project-search="' + search + '"><small>' +
-      esc(p.label) + '</small><h2><a href="' + project + '">' +
-      esc(p.name) + '</a></h2><div class="directory-stage"><span>' +
+      esc(p.label) + '</small><div class="directory-project-title"><h2><a href="' + project + '">' +
+      esc(p.name) + "</a></h2>" + rename + '</div><div class="directory-stage"><span>' +
       esc(step ? step.title : p.steps.length ? "全部步骤已完成" : "还没有步骤") +
       '</span><span>' + done + ' / ' + p.steps.length + ' 步完成</span></div>' +
       (p.steps.length ? '<progress aria-label="已完成步骤" value="' + done + '" max="' + p.steps.length + '"></progress>' : "") +
@@ -1413,6 +1417,15 @@ async function buildAction(action, t) {
       return projectForm();
     case "build-edit-project":
       return projectForm(p);
+    case "build-rename-project": {
+      buildForm("project-name", "修改项目名称", { id, version: Number(t.dataset.version) },
+        buildInput("name", "项目名称", t.dataset.name, true), { destination: t.dataset.destination });
+      const input = $('#dialog input[name="name"]');
+      input.maxLength = 140;
+      input.focus();
+      input.select();
+      return;
+    }
     case "build-new-step":
       return stepForm({}, p.id);
     case "build-edit-step":
@@ -1556,9 +1569,11 @@ async function submitBuild(form, values) {
     if (form.elements.template)
       values.template = form.elements.template.checked;
     const action = form.dataset.form;
-    const [section, owner] = action === "build-project" && values.destination
+    const naming = action === "build-project-name";
+    const query = naming ? $("#project-search")?.value || "" : "";
+    const [section, owner] = (action === "build-project" || naming) && values.destination
       ? values.destination.split("/").map(Number) : [activeAreaId, industryId];
-    if (action === "build-project") delete values.destination;
+    if (action === "build-project" || naming) delete values.destination;
     const res =
       action === "build-entry"
         ? await saveEntry(form, values)
@@ -1569,7 +1584,16 @@ async function submitBuild(form, values) {
     else if (action === "build-skill")
       navigate("skills", { project: Number(values.project) });
     else await load();
-    toast(res.storedIn ? "已保存到 " + res.storedIn : "已保存");
+    if (naming) {
+      const renamed = $('.directory-rename[data-id="' + res.id + '"][data-destination="' + section + "/" + owner + '"]');
+      const search = $("#project-search");
+      if (search && renamed?.closest("[data-project-search]").dataset.projectSearch.includes(query.trim().toLowerCase())) {
+        search.value = query;
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      renamed?.focus();
+    }
+    toast(naming ? "项目名称已更新" : res.storedIn ? "已保存到 " + res.storedIn : "已保存");
   } finally {
     modalBusy = false;
     button.disabled = false;

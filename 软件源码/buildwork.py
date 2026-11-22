@@ -43,6 +43,14 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS build_projects(
  id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, site TEXT NOT NULL, notes TEXT NOT NULL,
  created TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS build_project_names(
+ project INTEGER NOT NULL REFERENCES build_projects(id) ON DELETE CASCADE,
+ name TEXT NOT NULL, PRIMARY KEY(project,name));
+CREATE TRIGGER IF NOT EXISTS build_project_previous_name
+ AFTER UPDATE OF name ON build_projects WHEN OLD.name<>NEW.name
+ BEGIN
+   INSERT OR IGNORE INTO build_project_names(project,name) VALUES(OLD.id,OLD.name);
+ END;
 CREATE TABLE IF NOT EXISTS build_steps(
  id INTEGER PRIMARY KEY, project INTEGER NOT NULL REFERENCES build_projects(id),
  seq INTEGER NOT NULL, title TEXT NOT NULL, notes TEXT NOT NULL, status TEXT NOT NULL,
@@ -149,6 +157,8 @@ def save(db, action, p):
     ident = int(p.get("id") or 0)
     version = int(p.get("version") or 0)
     token = p.get("request", "")
+    if action == "project-name" and ident < 1:
+        raise ValueError("请选择要改名的项目。")
     if not ident:
         if not re.fullmatch(r"[a-zA-Z0-9-]{16,64}", token):
             raise ValueError("表单已过期，请重新打开。")
@@ -175,6 +185,9 @@ def save(db, action, p):
                 raise ValueError("请填写有效的官网网址。")
         data = {"name": name, "site": site, "notes": checked(p, "notes", 10000)}
         table = "build_projects"
+    elif action == "project-name":
+        table = "build_projects"
+        data = {"name": checked(p, "name", 140, True)}
     elif action == "skill":
         table = "build_skills"
         data = {

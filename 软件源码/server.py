@@ -1562,6 +1562,7 @@ def run(data, port, host, local):
                         p = self.body()
                         if url in (
                             "/api/build-project",
+                            "/api/build-project-name",
                             "/api/build-step",
                             "/api/build-skill",
                             "/api/build-page",
@@ -1585,6 +1586,8 @@ def run(data, port, host, local):
                                     raise ValueError(
                                         "请检查所属项目，同一项目内的 Skill 名称需唯一。"
                                     ) from ex
+                                if url == "/api/build-project-name":
+                                    raise ValueError("这个资料库里已有同名项目，请换一个名称。") from ex
                                 raise ValueError(
                                     "项目名称或本项目的页面路径重复，或关联的项目不存在。"
                                 ) from ex
