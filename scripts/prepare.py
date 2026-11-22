@@ -90,10 +90,14 @@ def prepare(downloads, target, manifest):
     update = manifest["records_update"]
     update_path = downloads / update["name"]
     copy_verified(update_path, update)
+    program = manifest["program"]
+    program_path = downloads / program["name"]
+    copy_verified(program_path, program)
     full = reassemble(downloads, manifest, downloads)
     target.parent.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(dir=target.parent) as temp:
         extract_package(full, Path(temp))
+        extract_package(program_path, Path(temp))
         package = Path(temp) / NAME
         sys.path.insert(0, str(package / "program"))
         try:

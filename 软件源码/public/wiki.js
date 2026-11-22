@@ -172,11 +172,12 @@ function wikiChatUpdates(project, items, answer) {
 }
 
 async function wikiPanel(params) {
+  const skills = '<a class="secondary" href="/?' + esc(qs({section: 2})) + '#skillbank">Skills 技能包</a>';
   if (!params.project) {
     const projects = await get("build-wiki-index");
     return '<div class="wiki-index"><div class="directory-tools">' +
       '<input id="wiki-search" type="search" placeholder="搜索项目、域名或知识正文" aria-label="搜索项目、域名或知识正文" maxlength="400">' +
-      '<span class="directory-count" aria-live="polite">共 ' + fmt(projects.length) + ' 个项目</span></div>' +
+      '<span class="directory-count" aria-live="polite">共 ' + fmt(projects.length) + ' 个项目</span>' + skills + '</div>' +
       '<div class="wiki-results">' + wikiDirectory(projects) + '</div></div>';
   }
   const p = await get("build-wiki-project", { project: params.project, slug: params.slug || "" });
@@ -185,7 +186,7 @@ async function wikiPanel(params) {
   const top = '<header class="wiki-header"><div><small>' +
     '<a href="/?' + esc(qs({ section: 2 })) + '#wiki">全部项目知识库</a></small><h2>' + esc(p.name) +
     '</h2></div><div class="step-actions"><a class="secondary" href="#buildhub/' + p.id + '">项目进度</a>' +
-    buildButton("journal", "查原始记录", "secondary") +
+    buildButton("journal", "查原始记录", "secondary") + skills +
     buildButton("wiki-prepare", "让 Codex 整理", "primary") + '</div></header>';
   if (p.page) {
     const item = p.page;
