@@ -1,0 +1,7 @@
+.DS_Store
+._*
+__pycache__/
+*.pyc
+downloads/
+*.part[0-9][0-9]
+/勋的软件-Win11-Mac.zip

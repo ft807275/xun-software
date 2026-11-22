@@ -1,0 +1,19 @@
+services:
+  library:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./private-data:/data
+  gateway:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      LIBRARY_DOMAIN: ${LIBRARY_DOMAIN:?Set LIBRARY_DOMAIN to your hostname}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - certs:/data
+    ports:
+      - "80:80"
+      - "443:443"
+volumes:
+  certs: {}

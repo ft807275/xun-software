@@ -1,0 +1,101 @@
+{
+  "version": "2.9.71",
+  "inventory": {
+    "databases": 15,
+    "originals": 325,
+    "media": 10790,
+    "restore_bytes": 21554399133,
+    "libraries": [
+      "包装袋",
+      "电池",
+      "气柱袋",
+      "蜂窝纸袋",
+      "包装设备",
+      "娃衣与纸样",
+      "工程机械",
+      "数字出版",
+      "精密零件",
+      "五金工具",
+      "一次性日用品",
+      "定制礼品",
+      "价值投资资料",
+      "B2C 建站资料",
+      "Skills 技能包"
+    ],
+    "version": "2.9.71",
+    "created": "2026-11-22 10:20:56"
+  },
+  "restore": {
+    "name": "勋的软件-Win11-Mac.zip",
+    "size": 21472828071,
+    "sha256": "ebbb649128a19055a34bab403c1e29ab90e7058452aa4476c16c08b58704b390",
+    "parts": [
+      {
+        "name": "xun-restore-2.9.71.part01",
+        "size": 1992294400,
+        "sha256": "62cdc1c7899a60b24c8a7b6187c30ef08a6f960cbd69717234abab6d4fdb7d7e"
+      },
+      {
+        "name": "xun-restore-2.9.71.part02",
+        "size": 1992294400,
+        "sha256": "a7bdc70662460a7df59b28b86a1f04cda277d1ae3666b195b67ee0a5182159b3"
+      },
+      {
+        "name": "xun-restore-2.9.71.part03",
+        "size": 1992294400,
+        "sha256": "2c3e2f694a59c87f7fa8fd045ec822da6db80fc892c8f22fb55f0d5d09b1931f"
+      },
+      {
+        "name": "xun-restore-2.9.71.part04",
+        "size": 1992294400,
+        "sha256": "eb98404fcfa74f4fb4b90cebd6e86befcd34dab2b5d39651591d376d986f2d19"
+      },
+      {
+        "name": "xun-restore-2.9.71.part05",
+        "size": 1992294400,
+        "sha256": "07b7acfd8d2b0851d9e3ef92972d817ff28bb0b18837081b1be5f94d5a93de71"
+      },
+      {
+        "name": "xun-restore-2.9.71.part06",
+        "size": 1992294400,
+        "sha256": "418cbc4112279c467776d423fea9278650a6cf7072727f6b880e0cce0f890885"
+      },
+      {
+        "name": "xun-restore-2.9.71.part07",
+        "size": 1992294400,
+        "sha256": "407dd16f3828bc61cf56491d9ab030869a3e80facdc176847de26ad3ff9d8d03"
+      },
+      {
+        "name": "xun-restore-2.9.71.part08",
+        "size": 1992294400,
+        "sha256": "00c5c6b850dd13adc3747b9f644268636e423773e38b4d346f93a6d1c0b0ff2a"
+      },
+      {
+        "name": "xun-restore-2.9.71.part09",
+        "size": 1992294400,
+        "sha256": "cfe8629d7535e2e20b015d3e7b5e4c20ace16f2fdb092117b67d789a6ca72da4"
+      },
+      {
+        "name": "xun-restore-2.9.71.part10",
+        "size": 1992294400,
+        "sha256": "91ba7161d795aee83482081ff715c07a939909b86ed60503dc528e108f61ea7d"
+      },
+      {
+        "name": "xun-restore-2.9.71.part11",
+        "size": 1549884071,
+        "sha256": "850e77f3f8b35d5061bb2a489f326b366c2a1c0ddd7b42aecce3335bbe59a212"
+      }
+    ]
+  },
+  "program": {
+    "name": "xun-program-2.9.71.zip",
+    "size": 88260849,
+    "sha256": "f4dcf49901c32cb61909b099e39b110a6efea9e532d0fd35af06e62651170a3d"
+  },
+  "project_files": {
+    "name": "xun-project-files-2.9.71.zip",
+    "size": 1221572309,
+    "sha256": "20c9872a116a09c162d2ebcb9fcfb5e04d35f87fa601922942daafdd622b3da4",
+    "files": 6499
+  }
+}

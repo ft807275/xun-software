@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>登录 · 勋的软件</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script defer src="/login.js"></script>
+  </head>
+  <body>
+    <header class="topbar signin-topbar"><button id="login-back" class="nav-back" type="button" aria-label="返回上一页" title="当前没有上一页" disabled>←</button><span class="crumb">登录资料库</span></header>
+    <main class="signin">
+      <img src="/favicon.svg" width="48" height="48" alt="" />
+      <h1>勋的软件</h1>
+      <form id="login" class="form-grid">
+        <label class="field full" id="act" hidden
+          >首次启用码<input
+            name="activation"
+            type="password"
+            autocomplete="off" /></label
+        ><label class="field full"
+          >资料库密码<input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required /></label
+        ><label class="field full" id="confirm" hidden
+          >再次输入密码<input
+            name="confirm"
+            type="password"
+            autocomplete="new-password"
+        /></label>
+        <p id="error" class="field full" role="alert"></p>
+        <button class="primary" type="submit">进入资料库</button>
+      </form>
+    </main>
+  </body>
+</html>
