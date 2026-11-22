@@ -8,7 +8,7 @@
 
 ## 下载与打开
 
-1. 登录拥有该私有仓库访问权限的 GitHub 账号，打开 [换机发布](https://github.com/ft807275/xun-software/releases)。克隆仓库，检出对应发布标签，把全部换机分卷、最新程序包「xun-program-2.9.71-wiki.zip」和最新资料包「xun-records-2.9.71-wiki.zip」下载到同一个文件夹。建议用有至少 90 GB 剩余空间的硬盘。
+1. 登录拥有该私有仓库访问权限的 GitHub 账号，打开 [换机发布](https://github.com/ft807275/xun-software/releases)。克隆仓库，检出对应发布标签，把全部换机分卷、最新程序包「xun-program-2.9.71-bilingual.zip」和最新资料包「xun-records-2.9.71-bilingual.zip」下载到同一个文件夹。建议用有至少 90 GB 剩余空间的硬盘。
 2. 从仓库根目录运行 `python3 scripts/prepare.py downloads 新安装目录`，Windows 可用 `py -3 scripts/prepare.py downloads 新安装目录`。Windows 没有 Python 时，下载并解压同次发布的程序包，用其中的「勋的软件/runtime/win/python.exe」运行该命令。脚本会校验、合并分卷，恢复资料并补齐之后归档的建站记录，最后生成一个新的安装文件夹。
 3. 从生成的安装文件夹打开「Mac-打开词库.command」或「Windows-打开词库.cmd」。新 Mac 第一次运行可能需要安装 Python，程序包自带安装器。
 4. 进入系统首页核对数据，再进「软件与建站资料 → 项目提示词」，打开 DEWEWE 或 HiveCush，查看当前阶段、各步骤提示词和原文。
@@ -16,7 +16,7 @@
 有 GitHub CLI 时可一次下载。下面的 `downloads` 是下载目录，`xun-restored` 是新的安装目录。
 
 ```sh
-gh release download v2.9.71 --repo ft807275/xun-software --pattern 'xun-restore-*.part*' --pattern 'xun-records-2.9.71-wiki.zip' --pattern 'xun-program-2.9.71-wiki.zip' --dir downloads
+gh release download v2.9.71 --repo ft807275/xun-software --pattern 'xun-restore-*.part*' --pattern 'xun-records-2.9.71-bilingual.zip' --pattern 'xun-program-2.9.71-bilingual.zip' --dir downloads
 python3 scripts/prepare.py downloads xun-restored
 ```
 

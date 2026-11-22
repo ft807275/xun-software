@@ -269,7 +269,7 @@ def init(data, seed=True, industry_name=None):
   CREATE TABLE IF NOT EXISTS sites(id INTEGER PRIMARY KEY, domain TEXT UNIQUE NOT NULL, name TEXT NOT NULL, url TEXT NOT NULL DEFAULT '', region TEXT NOT NULL DEFAULT '',role TEXT NOT NULL DEFAULT '',products TEXT NOT NULL DEFAULT '',notes TEXT NOT NULL DEFAULT '',status TEXT NOT NULL DEFAULT '已收录',evidence TEXT NOT NULL DEFAULT '[]',queries TEXT NOT NULL DEFAULT '[]');
   CREATE TABLE IF NOT EXISTS aliases(domain TEXT PRIMARY KEY,site INTEGER NOT NULL REFERENCES sites(id)) WITHOUT ROWID;
   CREATE TABLE IF NOT EXISTS words(id INTEGER PRIMARY KEY,norm TEXT NOT NULL,term TEXT NOT NULL COLLATE BINARY UNIQUE,category TEXT NOT NULL DEFAULT '',state INTEGER NOT NULL DEFAULT 0,manual INTEGER NOT NULL DEFAULT 0,reason TEXT NOT NULL DEFAULT '',notes TEXT NOT NULL DEFAULT '');
-  CREATE TABLE IF NOT EXISTS profiles(word INTEGER PRIMARY KEY REFERENCES words(id),translation TEXT,subtype TEXT,featured TEXT);
+  CREATE TABLE IF NOT EXISTS profiles(word INTEGER PRIMARY KEY REFERENCES words(id),translation TEXT,subtype TEXT,featured TEXT,english TEXT);
   CREATE INDEX IF NOT EXISTS prof_featured ON profiles(featured,word);
   CREATE TABLE IF NOT EXISTS archived(batch INTEGER PRIMARY KEY REFERENCES batches(id),digest TEXT NOT NULL,headers TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS import_runs(id TEXT PRIMARY KEY,filename TEXT NOT NULL,digest TEXT NOT NULL,
@@ -300,6 +300,8 @@ def init(data, seed=True, industry_name=None):
   """)
         with db:
             db.execute("BEGIN IMMEDIATE")
+            if not any(row[1] == "english" for row in db.execute("PRAGMA table_info(profiles)")):
+                db.execute("ALTER TABLE profiles ADD COLUMN english TEXT")
             columns = {item[1] for item in db.execute("PRAGMA table_info(batches)")}
             for column in ("distinct_words", "prior_word_id"):
                 if column not in columns:
@@ -791,7 +793,7 @@ def import_file(data, path, filename, opts, digest=None, progress=lambda n: None
         added = db.execute("SELECT changes()").fetchone()[0]
         if hasprofile:
             db.execute(
-                "INSERT OR IGNORE INTO profiles SELECT w.id,p.tr,p.sub,p.feat FROM profiles_in p JOIN words w ON w.term=p.k"
+                "INSERT OR IGNORE INTO profiles(word,translation,subtype,featured) SELECT w.id,p.tr,p.sub,p.feat FROM profiles_in p JOIN words w ON w.term=p.k"
             )
             db.execute("CREATE INDEX temp.prof_in_k ON profiles_in(k)")
             db.execute(

@@ -146,6 +146,7 @@ def list_words(db, q):
     search = norm(q.get("q", ""))
     select = """SELECT w.id,w.term,w.category,w.product_type,w.state,w.reason,w.notes,
         (SELECT translation FROM profiles WHERE word=w.id) AS translation,
+        (SELECT english FROM profiles WHERE word=w.id) AS english,
         cur.traffic,cur.dr,cur.url,cur.domain,cur.market,cur.sort_day FROM """
     metric_join, metric_args = representative_join(q)
     literal = q.get("q", "")
@@ -210,7 +211,11 @@ def list_words(db, q):
         }
         for r in result:
             r["sites"] = source_counts.get(r["id"], 0)
-    return {"rows": result, "more": more}
+    total = len(result)
+    if more or q.get("after"):
+        total_where, total_args = word_filter(dict(q, after=""))
+        total = db.execute("SELECT count(*) FROM words w" + total_where, total_args).fetchone()[0]
+    return {"rows": result, "more": more, "total": total}
 
 
 def detail(db, q):
@@ -248,7 +253,7 @@ def detail(db, q):
                 if v not in ("", None)
             ]
     profile = db.execute(
-        "SELECT translation,subtype,featured FROM profiles WHERE word=?", (wid,)
+        "SELECT translation,subtype,featured,english FROM profiles WHERE word=?", (wid,)
     ).fetchone()
     return {
         "word": {**dict(w), **(dict(profile) if profile else {})},

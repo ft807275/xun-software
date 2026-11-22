@@ -88,9 +88,9 @@
     ]
   },
   "program": {
-    "name": "xun-program-2.9.71-wiki.zip",
-    "size": 88260904,
-    "sha256": "b3e5366e1809fd813eb719b334c809e16d02458b9a283302f0066ce8b1ccbd62"
+    "name": "xun-program-2.9.71-bilingual.zip",
+    "size": 88261359,
+    "sha256": "203ae9e0653b836ed033556c33f709e322c62365da35ffc7d81b2dae890f4222"
   },
   "project_files": {
     "name": "xun-project-files-2.9.71.zip",
@@ -99,11 +99,11 @@
     "files": 6499
   },
   "records_update": {
-    "name": "xun-records-2.9.71-wiki.zip",
-    "created": "2026-11-22T11:31:52+08:00",
-    "size": 1582002,
-    "sha256": "80c7e451ef1335d62a8c6ab8e188bc9ca2c25209df07e697692be41d92e2adaa",
-    "databases": 1,
+    "name": "xun-records-2.9.71-bilingual.zip",
+    "created": "2026-11-22T11:52:36+08:00",
+    "size": 1858358,
+    "sha256": "eee239a7a0d436f53b796f7e611a936f6b9dfa4442fbb67ce6023023ffdce4f0",
+    "databases": 15,
     "added_files": 0,
     "removed_files": 0
   }

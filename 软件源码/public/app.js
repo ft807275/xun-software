@@ -796,10 +796,11 @@ async function openBrief() {
   update();
 }
 
-function toolRow() {
+function toolRow(total) {
   return (
     '<div class="list-caption"><span>' +
     esc(titles[view]) +
+    (total == null ? "" : ' <span class="keyword-result-count">共 ' + fmt(total) + ' 个词</span>') +
     "</span>" +
     (view === "words" ? selectedControls() : "") +
     "</div>"
@@ -900,19 +901,21 @@ async function load(position = null) {
   if (target === "words") {
     shown = d.rows;
     const b = shown
-      .map(
-        (w) =>
-          '<tr><td class="check"><input type="checkbox" data-id="' +
+      .map((w) => {
+        const chineseOriginal = /\p{Script=Han}/u.test(w.term) && !/[\p{Script=Hiragana}\p{Script=Katakana}]/u.test(w.term);
+        const chinese = w.translation || (chineseOriginal ? w.term : "");
+        return '<tr><td class="check"><input type="checkbox" data-id="' +
           w.id +
           '" ' +
           (selection.has(w.id) ? "checked " : "") +
           'aria-label="选择 ' +
           esc(w.term) +
           '"></td><td>' +
-          btn("word", esc(w.term), "record-name", 'data-id="' + w.id + '"') +
-          (w.translation
-            ? '<small class="secondary-text">' + esc(w.translation) + "</small>"
+          btn("word", esc(w.english || w.term), "record-name", 'data-id="' + w.id + '"') +
+          (w.english && w.english !== w.term && w.term !== chinese
+            ? '<small class="secondary-text">' + esc(w.term) + "</small>"
             : "") +
+          '</td><td>' + (chinese ? esc(chinese) : '<span class="secondary-text">待翻译</span>') +
           "</td><td>" +
           esc(typeName(w.product_type)) +
           (w.category
@@ -929,16 +932,17 @@ async function load(position = null) {
           "</td><td>" +
           (w.url ? safeLink(w.url, w.domain || w.url) : esc(w.domain || "—")) +
           (w.market ? '<small class="secondary-text">' + esc(marketLabel(w.market)) + '</small>' : "") +
-          "</td></tr>",
-      )
+          "</td></tr>";
+      })
       .join("");
     html =
-      toolRow() +
+      toolRow(d.total) +
       (b
         ? table(
             [
               '<input type="checkbox" id="checkall" aria-label="选择本页全部">',
-              "关键词 / 中文",
+              "关键词 / 英文",
+              "中文翻译",
               "产品类型 / 原分类",
               "状态",
               filt.batch ? "本批同行数" : "来源同行数",
@@ -1085,7 +1089,8 @@ async function word(id, after = 0, scoped = view === "words" && Boolean(filt.bat
     "<p>" +
       badge(w.state) +
       "　" +
-      esc([w.translation, w.category, w.subtype].filter(Boolean).join(" / ")) +
+      esc([w.english !== w.term ? w.english : "", w.translation !== w.term ? w.translation : "",
+        w.category, w.subtype].filter(Boolean).join(" / ")) +
       "</p>" +
       (w.reason ? '<p class="inline-hint">' + esc(w.reason) + "</p>" : "") +
       '<div class="button-line">' +

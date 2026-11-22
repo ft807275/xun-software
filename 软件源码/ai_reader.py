@@ -34,7 +34,8 @@ def keyword_rows(db, filters, limit=None, ids=None):
     source, order, where, values = word_page_filter(filters,
         use_index_order=limit is not None and ids is None, single_word=exact is not None)
     joined, bindings = representative_join(filters)
-    sql = """SELECT w.id,w.term AS keyword,p.translation,
+    english = "p.english" if any(row[1] == "english" for row in db.execute("PRAGMA table_info(profiles)")) else "NULL"
+    sql = f"""SELECT w.id,w.term AS keyword,p.translation,{english} AS english,
         CASE w.product_type WHEN 0 THEN '待归类' WHEN -1 THEN '待确认' ELSE t.name END AS product_type,
         w.state,cur.market,cur.traffic,cur.dr,cur.url AS ranking_url,cur.domain AS competitor_domain,
         (SELECT url FROM sites WHERE id=cur.site) AS competitor_url,cur.sort_day AS record_date

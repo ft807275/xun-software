@@ -468,6 +468,13 @@ select,
   background: transparent;
   text-align: left;
 }
+.keyword-result-count {
+  margin-inline-start: 12px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
 .record-name,
 .record-name button {
   color: #173b37;
