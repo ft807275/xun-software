@@ -509,6 +509,77 @@ select,
   opacity: 0;
   pointer-events: none;
 }
+.keyword-table {
+  table-layout: fixed;
+  min-width: 748px;
+}
+.keyword-table th:first-child { width: 42px; }
+.keyword-table th:nth-child(2) { width: 25%; }
+.keyword-table th:nth-child(3) { width: 18%; }
+.keyword-table th:nth-child(4) { width: 17%; }
+.keyword-table th:nth-child(5) { width: 83px; }
+.keyword-table th:nth-child(6) { width: 50px; }
+.keyword-table th, .keyword-table td { padding: 11px 10px; }
+.keyword-table td { vertical-align: middle; }
+.keyword-table .copyable-value { min-width: 0; align-items: center; }
+.keyword-table .record-name,
+.keyword-table .keyword-chinese .copyable-value > span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+.keyword-table .inline-copy {
+  position: relative;
+  width: 24px;
+  height: 23px;
+  padding: 0;
+  font-size: 0;
+  opacity: 0.78;
+}
+.keyword-table .inline-copy::before,
+.keyword-table .inline-copy::after {
+  position: absolute;
+  content: "";
+  width: 7px;
+  height: 8px;
+  border: 1px solid currentColor;
+  border-radius: 1.5px;
+}
+.keyword-table .inline-copy::before { inset: 5px auto auto 7px; }
+.keyword-table .inline-copy::after { inset: 8px auto auto 10px; background: #fff; }
+.keyword-table .inline-copy:hover, .keyword-table .inline-copy:focus-visible { opacity: 1; }
+.keyword-classification-line, .keyword-source-line { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.keyword-classification-line > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.keyword-classification-line .status { flex: 0 0 auto; padding: 2px 6px; font-size: 0.75rem; }
+.keyword-source-meta { flex: 0 0 auto; color: var(--muted); font-size: 0.75rem; }
+.keyword-metric { font-variant-numeric: tabular-nums; }
+.keyword-source .copyable-value { align-items: center; }
+.keyword-source .copyable-value > span,
+.keyword-source .copyable-value a {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 600px) {
+  .records-table.keyword-table { min-width: 0; }
+  .records-table.keyword-table tbody tr {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 7px 8px;
+  }
+  .keyword-table tbody .keyword-classification { grid-area: 2 / 2; }
+  .keyword-table tbody .keyword-traffic { grid-area: 2 / 3; }
+  .keyword-table tbody .keyword-dr { grid-area: 3 / 3; }
+  .records-table.keyword-table tbody .keyword-source { grid-area: 3 / 2; margin-left: 0; min-width: 0; }
+  .keyword-table .keyword-source-meta { display: none; }
+  .keyword-table .keyword-metric::before { content: attr(data-label) " "; color: var(--muted); }
+}
 .record-name,
 .record-name button {
   color: #173b37;

@@ -142,7 +142,7 @@ const btn = (action, label, cls = "secondary", extra = "") =>
 function copyableValue(html, value, kind) {
   if (!value) return html;
   const label = esc("复制" + kind + " " + value);
-  return '<span class="copyable-value"><span>' + html + '</span>' +
+  return '<span class="copyable-value"><span title="' + esc(value) + '">' + html + '</span>' +
     btn("copy-value", "复制", "inline-copy", 'data-copy="' + esc(value) +
       '" aria-label="' + label + '" title="' + label + '"') + '</span>';
 }
@@ -715,9 +715,9 @@ function navigate(v, params = {}, record = true) {
   if (!position) window.scrollTo(0,0);
   load(position).catch(failure);
 }
-function table(headers, body) {
+function table(headers, body, tableClass = "") {
   return (
-    '<div class="table-scroll"><table class="records-table"><thead><tr>' +
+    '<div class="table-scroll"><table class="records-table ' + tableClass + '"><thead><tr>' +
     headers.map((h) => "<th>" + h + "</th>").join("") +
     "</tr></thead><tbody>" +
     body +
@@ -934,40 +934,35 @@ async function load(position = null) {
   let html = "";
   if (target === "words") {
     shown = d.rows;
+    const trafficLabel = filt.batch ? "本批流量" : "自然流量";
     const b = shown
       .map((w) => {
         const chineseOriginal = /\p{Script=Han}/u.test(w.term) && !/[\p{Script=Hiragana}\p{Script=Katakana}]/u.test(w.term);
         const chinese = w.translation || (chineseOriginal ? w.term : "");
         const keyword = w.english || w.term;
+        const productType = typeName(w.product_type);
+        const typeHint = [productType, w.category].filter((text, index, all) => text && all.indexOf(text) === index).join(" / ");
+        const sourceMeta = [w.market?.toUpperCase(), fmt(w.sites) + " 家"].filter(Boolean).join(" · ");
+        const sourceHint = [w.market && marketLabel(w.market), fmt(w.sites) + " 家同行"].filter(Boolean).join(" · ");
         return '<tr><td class="check"><input type="checkbox" data-id="' +
           w.id +
           '" ' +
           (selection.has(w.id) ? "checked " : "") +
           'aria-label="选择 ' +
           esc(w.term) +
-          '"></td><td>' +
-          copyableValue(btn("word", esc(keyword), "record-name", 'data-id="' + w.id + '"'), keyword, "关键词") +
-          (w.english && w.english !== w.term && w.term !== chinese
-            ? '<small class="secondary-text">' + copyableValue(esc(w.term), w.term, "关键词") + "</small>"
-            : "") +
-          '</td><td>' + (chinese ? copyableValue(esc(chinese), chinese, "中文翻译") : '<span class="secondary-text">待翻译</span>') +
-          "</td><td>" +
-          esc(typeName(w.product_type)) +
-          (w.category
-            ? '<small class="secondary-text">' + esc(w.category) + "</small>"
-            : "") +
-          "</td><td>" +
-          badge(w.state) +
-          "</td><td>" +
-          fmt(w.sites) +
-          "</td><td>" +
+          '"></td><td class="keyword-term">' +
+          copyableValue(btn("word", esc(keyword), "record-name", 'data-id="' + w.id + '" title="' + esc(w.term) + '"'), keyword, "关键词") +
+          '</td><td class="keyword-chinese">' + (chinese ? copyableValue(esc(chinese), chinese, "中文翻译") : '<span class="secondary-text">待翻译</span>') +
+          '</td><td class="keyword-classification"><div class="keyword-classification-line"><span title="' + esc(typeHint) + '">' +
+          esc(productType) + '</span>' + badge(w.state) + '</div>' +
+          '</td><td class="keyword-metric keyword-traffic" data-label="' + trafficLabel + '">' +
           esc(w.traffic ?? "—") +
-          "</td><td>" +
+          '</td><td class="keyword-metric keyword-dr" data-label="DR">' +
           esc(w.dr ?? "—") +
-          "</td><td>" +
+          '</td><td class="keyword-source"><div class="keyword-source-line">' +
           (w.url ? safeLink(w.url, w.domain || w.url) : copyableValue(esc(w.domain || "—"), w.domain, "域名")) +
-          (w.market ? '<small class="secondary-text">' + esc(marketLabel(w.market)) + '</small>' : "") +
-          "</td></tr>";
+          '<small class="keyword-source-meta" title="' + esc(sourceHint) + '">' + esc(sourceMeta) + '</small>' +
+          "</div></td></tr>";
       })
       .join("");
     html =
@@ -978,14 +973,13 @@ async function load(position = null) {
               '<input type="checkbox" id="checkall" aria-label="选择本页全部">',
               "关键词 / 英文",
               "中文翻译",
-              "产品类型 / 原分类",
-              "状态",
-              filt.batch ? "本批同行数" : "来源同行数",
-              filt.batch ? "本批流量" : "自然流量",
+              "产品与状态",
+              trafficLabel,
               "DR",
               filt.batch ? "本批来源" : "最近来源",
             ],
             b,
+            "keyword-table",
           )
         : nothing) +
       pager(d.more);

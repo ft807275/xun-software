@@ -31,9 +31,29 @@
     "sha256": "ebbb649128a19055a34bab403c1e29ab90e7058452aa4476c16c08b58704b390",
     "parts": [
       {
-        "name": "xun-restore-2.9.71.part01",
-        "size": 1992294400,
-        "sha256": "62cdc1c7899a60b24c8a7b6187c30ef08a6f960cbd69717234abab6d4fdb7d7e"
+        "name": "xun-restore-2.9.71.part011",
+        "size": 419430400,
+        "sha256": "b4dfa1b8893f89bfe048070db29439db88a39e7d3a36595f76ea9856f3313cc4"
+      },
+      {
+        "name": "xun-restore-2.9.71.part012",
+        "size": 419430400,
+        "sha256": "37fcf2d7535903942e6c16fab32a35bdeaf6a94be4b1a7f553de624ee0aa0f69"
+      },
+      {
+        "name": "xun-restore-2.9.71.part013",
+        "size": 419430400,
+        "sha256": "313ce859aed72123c6643d84cb3d7bfe477b0a5864ce5b279963d23d83de6d81"
+      },
+      {
+        "name": "xun-restore-2.9.71.part014",
+        "size": 419430400,
+        "sha256": "2ff75824c80679dc05a55b005a1f9e37caffc61b59fd0944c9e2a70cbbb43b30"
+      },
+      {
+        "name": "xun-restore-2.9.71.part015",
+        "size": 314572800,
+        "sha256": "663200a8c52dec8a5f9c00328dcbd67e9b36c104dd476bba719727ca7640fe57"
       },
       {
         "name": "xun-restore-2.9.71.part02",
@@ -88,9 +108,9 @@
     ]
   },
   "program": {
-    "name": "xun-program-2.9.71-clipboard.zip",
-    "size": 88262099,
-    "sha256": "10692a54b295bdc71350ebf4bdf1abb6b49f23cf575ae740b2a6a12c6823b1e3"
+    "name": "xun-program-2.9.71-compact.zip",
+    "size": 88262968,
+    "sha256": "81c2d12aae7f294b4873c957c5e76688b0787bdd54e2ef4793e96f286a2844b9"
   },
   "project_files": {
     "name": "xun-project-files-2.9.71.zip",
@@ -99,10 +119,10 @@
     "files": 6499
   },
   "records_update": {
-    "name": "xun-records-2.9.71-bilingual.zip",
-    "created": "2026-11-22T11:52:36+08:00",
-    "size": 1858358,
-    "sha256": "eee239a7a0d436f53b796f7e611a936f6b9dfa4442fbb67ce6023023ffdce4f0",
+    "name": "xun-records-2.9.71-compact-final.zip",
+    "created": "2026-11-22T12:32:27+08:00",
+    "size": 2949085,
+    "sha256": "ec316148879b52f77d19ab98c2bcee7b5a991be330cfefc7c4347271d199442c",
     "databases": 15,
     "added_files": 0,
     "removed_files": 0
