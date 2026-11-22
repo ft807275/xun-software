@@ -227,12 +227,10 @@ function sidebarItems(section) {
   if (section.kind === "keywords")
     return ["words", "types", "sites", "gallery", "gallery-all", "imports", "rules"]
       .map((view) => [view, view === "gallery-all" ? "跨行业找图" : titles[view]]);
-  if (section.kind === "notes")
-    return section.children.map((child) => ["materials", child.name, child.id]);
-  const views = section.id === 2
-    ? ["sitemap", "workflows", "siteplan", "prompts", "buildsearch", "wiki", "materials", "skills", "skillbank"]
-    : ["sitemap", "workflows", "siteplan", "materials"];
-  return views.map((view) => [view, titles[view]]);
+  if (section.id === 2)
+    return ["sitemap", "workflows", "siteplan", "materials", "prompts", "buildsearch", "wiki", "skills", "skillbank"]
+      .map((view) => [view, titles[view]]);
+  return section.children.map((child) => ["materials", child.name, child.id]);
 }
 async function refreshAreas() {
   areas = await get("sections");
