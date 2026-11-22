@@ -1576,28 +1576,65 @@ select,
   padding-top: 12px;
   border-top: 1px solid var(--line);
 }
-.sidebar :is(#library-nav, #build-nav) {
-  margin-top: 6px;
-  gap: 1px;
-}
-.sidebar :is(#library-nav, #build-nav) .nav-button {
-  min-height: 31px;
-  padding-block: 5px;
-}
 .sidebar .primary-nav .nav-button {
   min-height: 35px;
   padding-block: 7px;
 }
-.software-subnav {
+.section-nav-heading {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid transparent;
+  border-radius: 9px;
+}
+.section-nav-heading.active {
+  background: #e0ece3;
+  border-color: #d0e2d7;
+}
+.section-nav-heading .section-nav-parent {
+  flex: 1;
+  min-width: 0;
+  font-weight: 630;
+}
+.section-nav-heading.active .section-nav-parent {
+  border-color: transparent;
+  background: transparent;
+  color: #15564a;
+}
+.section-nav-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #42695f;
+}
+.section-nav-toggle:hover { background: #d3e4d9; }
+.section-nav-toggle span {
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+}
+.section-nav-toggle[aria-expanded="true"] span {
+  transform: translateY(-2px) rotate(45deg);
+}
+.section-nav-children {
   display: grid;
   gap: 2px;
-  margin: 4px 0 5px 14px;
-  padding-left: 8px;
-  border-left: 1px solid #bfd0c8;
+  margin: 4px 0 8px 20px;
+  padding-left: 9px;
+  border-left: 1px solid #b9cec2;
 }
-.sidebar .software-subnav .nav-button {
+.sidebar .section-nav-children .nav-button {
   min-height: 31px;
-  padding-block: 5px;
+  padding: 5px 9px;
+  font-size: 0.875rem;
+}
+.section-nav-children .nav-button[aria-current="page"] {
+  border-left-color: #267160;
+  box-shadow: inset 2px 0 #267160;
 }
 .workspace-panel {
   background: transparent;
@@ -1811,13 +1848,12 @@ select,
   align-items: center;
 }
 @media (max-width: 760px) {
-  .sidebar .primary-nav,
-  .sidebar :is(#library-nav, #build-nav) {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: start;
-    overflow-x: auto;
-    gap: 4px;
+  .sidebar .primary-nav {
+    margin-top: 8px;
+    overflow-x: visible;
+  }
+  .section-nav-children {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .sidebar .industry-box {
     margin: 2px 0;
@@ -1826,9 +1862,6 @@ select,
   }
   .module-card {
     padding: 16px;
-  }
-  .sidebar .primary-nav {
-    margin-top: 8px;
   }
 }
 .material-search {

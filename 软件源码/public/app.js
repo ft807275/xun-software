@@ -648,33 +648,12 @@ function navigate(v, params = {}, record = true) {
   $$("[data-view]").forEach((x) =>
     x.classList.toggle("active", x.dataset.view === v),
   );
-  const buildArea = [
-    "buildhub",
-    "buildsearch",
-    "workflows",
-    "materials",
-    "siteplan",
-    "sitemap",
-    "skillbank",
-    "wiki",
-    "prompts",
-    "skills",
-  ].includes(v);
-  $("#library-nav").hidden = v === "home" || buildArea;
-  $("#build-nav").hidden = !buildArea || area?.kind === "notes";
-  $("#software-subnav").hidden = activeAreaId !== 2 || !buildArea;
-  $('#build-nav [data-view="siteplan"]').hidden = activeAreaId === 2;
+  updateSidebar(v, params);
   if (["skillbank", "wiki", "buildsearch", "prompts"].includes(v)) $("#workspace-name").textContent = area.name;
   $(".industry-box").hidden = v === "home" || v === "gallery-all" || overview || skillsIndex || v === "sitemap" || v === "wiki" || v === "prompts" || v === "buildsearch" || activeAreaId >= 3;
   $(".back-home").hidden = v === "home";
   if (activeAreaId >= 3 && v !== "home")
     $("#workspace-name").textContent = area.name;
-  $$(".primary-nav [data-id]").forEach((x) =>
-    x.classList.toggle(
-      "active",
-      v !== "home" && Number(x.dataset.id) === activeAreaId,
-    ),
-  );
   $("#actions").innerHTML = [
     "home",
     "library",

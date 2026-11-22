@@ -216,38 +216,74 @@ function viewButton(target, heading, description, total) {
     "</small></button>"
   );
 }
+function sectionHref(section, view, sub) {
+  const overview = {keywords:"library", notes:"materials"};
+  const search = section.id === activeAreaId
+    ? location.search : "?" + qs({industry:industryId, section:section.id});
+  return "/" + search + "#" + (view || overview[section.kind] || "buildhub") +
+    (sub === undefined ? "" : "/" + sub);
+}
+function sidebarItems(section) {
+  if (section.kind === "keywords")
+    return ["words", "types", "sites", "gallery", "gallery-all", "imports", "rules"]
+      .map((view) => [view, view === "gallery-all" ? "跨行业找图" : titles[view]]);
+  if (section.kind === "notes")
+    return section.children.map((child) => ["materials", child.name, child.id]);
+  const views = section.id === 2
+    ? ["sitemap", "workflows", "siteplan", "prompts", "buildsearch", "wiki", "materials", "skills", "skillbank"]
+    : ["sitemap", "workflows", "siteplan", "materials"];
+  return views.map((view) => [view, titles[view]]);
+}
 async function refreshAreas() {
   areas = await get("sections");
   area = areas.find((x) => x.id === activeAreaId) || areas[1];
-  $(".primary-nav").innerHTML = areas.map((a) => {
-    const parent = buildButton("area", a.name, "nav-button", a.id);
-    if (a.id !== 2) return parent;
-    const tools = ["prompts", "wiki", "skills", "skillbank", "siteplan"].map((target) =>
-      '<button type="button" class="nav-button" data-view="' + target + '">' + esc(titles[target]) + '</button>'
+  $(".primary-nav").innerHTML = areas.map((section) => {
+    const group = "section-nav-" + section.id;
+    const links = sidebarItems(section).map(([view, label, sub]) =>
+      '<a class="nav-button" href="' + esc(sectionHref(section, view, sub)) +
+      '" data-nav-view="' + view + '" data-nav-sub="' + (sub ?? "") + '">' +
+      esc(label) + "</a>"
     ).join("");
-    return '<div class="software-nav-group">' + parent +
-      '<div id="software-subnav" class="software-subnav" role="group" aria-label="' +
-      esc(a.name) + '的二级菜单" hidden>' + tools + '</div></div>';
+    const parent = '<a class="nav-button section-nav-parent" href="' +
+      esc(sectionHref(section)) + '">' + esc(section.name) + "</a>";
+    const toggle = links ? '<button type="button" class="section-nav-toggle" data-action="build-toggle-section"' +
+      ' aria-controls="' + group + '" aria-expanded="false" data-section-name="' + esc(section.name) +
+      '" aria-label="展开' + esc(section.name) + '"><span aria-hidden="true"></span></button>' : "";
+    return '<div class="section-nav-group" data-nav-section="' + section.id + '">' +
+      '<div class="section-nav-heading">' + parent + toggle + "</div>" +
+      (links ? '<div class="section-nav-children" id="' + group + '" role="group" aria-label="' +
+        esc(section.name) + '的二级菜单" hidden>' + links + "</div>" : "") + "</div>";
   }).join("");
 }
+function setSectionExpanded(toggle, expanded) {
+  toggle.setAttribute("aria-expanded", String(expanded));
+  toggle.setAttribute("aria-label", (expanded ? "收起" : "展开") + toggle.dataset.sectionName);
+  document.getElementById(toggle.getAttribute("aria-controls")).hidden = !expanded;
+}
+function updateSidebar(view, params) {
+  const owner = view === "home" ? 0 : view === "gallery-all" ? 1 : activeAreaId;
+  $$(".section-nav-group").forEach((group) => {
+    const current = Number(group.dataset.navSection) === owner;
+    const heading = group.querySelector(".section-nav-heading");
+    const parent = heading.querySelector(".section-nav-parent");
+    const toggle = heading.querySelector(".section-nav-toggle");
+    let childCurrent = false;
+    group.querySelectorAll("[data-nav-view]").forEach((link) => {
+      const selected = current && link.dataset.navView === view &&
+        (!link.dataset.navSub || link.dataset.navSub === String(params.sub ?? ""));
+      if (selected) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+      childCurrent ||= selected;
+    });
+    heading.classList.toggle("active", current);
+    if (current && !childCurrent) parent.setAttribute("aria-current", "page");
+    else parent.removeAttribute("aria-current");
+    if (toggle) setSectionExpanded(toggle, current);
+  });
+}
 function openArea(id, sub) {
-  const a = areas.find((x) => x.id === Number(id));
-  if (!a) return;
-  const leaf =
-    a.kind === "keywords"
-      ? "library"
-      : a.kind === "notes" || sub !== undefined
-        ? "materials"
-        : "buildhub";
-  openAppLocation(
-    "/?industry=" +
-      industryId +
-      "&section=" +
-      a.id +
-      "#" +
-      leaf +
-      (sub !== undefined ? "/" + sub : ""),
-  );
+  const section = areas.find((x) => x.id === Number(id));
+  if (section) openAppLocation(sectionHref(section, sub === undefined ? undefined : "materials", sub));
 }
 let homeImportIndustry = 0;
 function workbench(desk) {
@@ -1348,6 +1384,8 @@ async function buildAction(action, t) {
       );
     case "build-area":
       return openArea(id);
+    case "build-toggle-section":
+      return setSectionExpanded(t, t.getAttribute("aria-expanded") !== "true");
     case "build-sub":
       return navigate("materials", { sub: String(id) });
     case "build-new-section":
