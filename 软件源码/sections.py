@@ -5,6 +5,11 @@ import re
 from library import dbopen, init, norm, rows
 from contextlib import closing
 
+VISIBLE = """COALESCE(
+    (SELECT v FROM settings WHERE k='archived-section:' || top_sections.id),
+    CASE WHEN top_sections.id=3 THEN '1' ELSE '0' END
+)<>'1'"""
+
 DEFAULTS = [
     (1, "行业关键词库", "keywords"),
     (2, "软件与建站资料", "build"),
@@ -66,13 +71,17 @@ def initialize(root):
 
 
 def listing(db):
-    result = rows(db, "SELECT * FROM top_sections WHERE kind<>'skillbank' ORDER BY id")
+    result = rows(db, f"SELECT * FROM top_sections WHERE kind<>'skillbank' AND {VISIBLE} ORDER BY id")
     groups = {}
     for r in rows(db, "SELECT * FROM sub_sections ORDER BY id"):
         groups.setdefault(r["section"], []).append(r)
     for r in result:
         r["children"] = groups.get(r["id"], [])
     return result
+
+
+def active_section(db, ident):
+    return db.execute(f"SELECT * FROM top_sections WHERE id=? AND {VISIBLE}", (ident,)).fetchone()
 
 
 def save(root, p, child=False):
@@ -85,6 +94,8 @@ def save(root, p, child=False):
             parent = int(p["section"])
             if parent == 1:
                 raise ValueError("请从行业关键词库添加行业。")
+            if not active_section(db, parent):
+                raise ValueError("请先恢复这个一级类目。")
             cues = "|".join(
                 dict.fromkeys(
                     x.strip()
@@ -108,6 +119,12 @@ def save(root, p, child=False):
             "SELECT id FROM top_sections WHERE name=?", (name,)
         ).fetchone()
         if existing:
+            if not active_section(db, existing[0]):
+                db.execute(
+                    """INSERT INTO settings(k,v) VALUES(?,'0')
+                       ON CONFLICT(k) DO UPDATE SET v=excluded.v""",
+                    (f"archived-section:{existing[0]}",),
+                )
             return {"id": existing[0]}
         kind = p.get("kind", "notes")
         if kind not in ("notes", "build"):

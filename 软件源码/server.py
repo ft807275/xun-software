@@ -551,9 +551,7 @@ def run(data, port, host, local):
                 area = None
                 if scoped:
                     with contextlib.closing(dbopen(main_data)) as master:
-                        area = master.execute(
-                            "SELECT * FROM top_sections WHERE id=?", (sid,)
-                        ).fetchone()
+                        area = sections.active_section(master, sid)
                     if not area:
                         raise ValueError("这个一级类目不存在。")
                 data = (

@@ -3152,6 +3152,10 @@ document.addEventListener("keydown", (e) => {
   try {
     const all = (knownIndustries = await get("industries"));
     await refreshAreas();
+    if (!areas.some((item) => item.id === activeAreaId)) {
+      location.replace("/");
+      return;
+    }
     const current = all.find((i) => i.id === industryId);
     if (!current) {
       changeIndustry(all[0].id);
