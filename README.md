@@ -4,23 +4,23 @@
 
 ## 换机时交给 Codex
 
-> 在当前电脑上恢复 GitHub 私有仓库 ft807275/xun-software 的「勋的软件」。按 README 下载最新完整换机发布，逐个校验分卷，完整解压并首次启动。核对行业库、产品图库、DEWEWE 与 HiveCush 的建站项目、提示词与原文，并保留此电脑已有的数据。
+> 在当前电脑上恢复 GitHub 私有仓库 ft807275/xun-software 的「勋的软件」。按 README 下载最新完整换机发布，校验全部分卷和资料更新包，恢复到新的安装目录并首次启动。核对行业库、产品图库、DEWEWE 与 HiveCush 的建站项目、提示词与原文，并保留此电脑已有的数据。
 
 ## 下载与打开
 
-1. 登录拥有该私有仓库访问权限的 GitHub 账号，打开 [换机发布](https://github.com/ft807275/xun-software/releases)。克隆源代码，下载同一发布中的所有 `xun-restore-*.part*` 到同一个文件夹。建议用有至少 90 GB 剩余空间的内置硬盘。
-2. 检出对应版本。从仓库根目录运行 `python3 scripts/reassemble.py 下载文件夹`，Windows 使用 `py -3 scripts/reassemble.py 下载文件夹`。Windows 没有 Python 时，可先下载并解压同次发布的程序包，通过其中的 `勋的软件/runtime/win/python.exe` 运行这个脚本。脚本校验每个分卷和最终 ZIP 的 SHA-256。
-3. 将生成的「勋的软件-Win11-Mac.zip」完整解压到新文件夹。Windows 双击「Windows-打开词库.cmd」，Mac 双击「Mac-打开词库.command」。首次启动会恢复并校验资料。出现选择旧资料目录的界面时，先核对本次解压目录是否包含 `library-data.zip`。
+1. 登录拥有该私有仓库访问权限的 GitHub 账号，打开 [换机发布](https://github.com/ft807275/xun-software/releases)。克隆仓库，检出对应发布标签，把全部换机分卷和「xun-records-2.9.71.zip」下载到同一个文件夹。建议用有至少 90 GB 剩余空间的硬盘。
+2. 从仓库根目录运行 `python3 scripts/prepare.py downloads 新安装目录`，Windows 可用 `py -3 scripts/prepare.py downloads 新安装目录`。Windows 没有 Python 时，下载并解压同次发布的程序包，用其中的「勋的软件/runtime/win/python.exe」运行该命令。脚本会校验、合并分卷，恢复资料并补齐之后归档的建站记录，最后生成一个新的安装文件夹。
+3. 从生成的安装文件夹打开「Mac-打开词库.command」或「Windows-打开词库.cmd」。新 Mac 第一次运行可能需要安装 Python，程序包自带安装器。
 4. 进入系统首页核对数据，再进「软件与建站资料 → 项目提示词」，打开 DEWEWE 或 HiveCush，查看当前阶段、各步骤提示词和原文。
 
-用 GitHub CLI 可以从仓库目录一次下载全部分卷。
+有 GitHub CLI 时可一次下载。下面的 `downloads` 是下载目录，`xun-restored` 是新的安装目录。
 
 ```sh
-gh release download v2.9.71 --repo ft807275/xun-software --pattern 'xun-restore-*.part*' --dir downloads
-python3 scripts/reassemble.py downloads
+gh release download v2.9.71 --repo ft807275/xun-software --pattern 'xun-restore-*.part*' --pattern 'xun-records-*.zip' --dir downloads
+python3 scripts/prepare.py downloads xun-restored
 ```
 
-「release-manifest.json」中包含本版资料统计、ZIP 校验值和分卷顺序。校验完整 ZIP 后，可保留它并移走已重组的下载分卷。
+「release-manifest.json」记录本版的资料统计、分卷顺序和校验值。脚本会保留下载的完整换机 ZIP 和新安装目录。
 
 ## 建站工作目录
 
