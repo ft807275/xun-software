@@ -83,6 +83,49 @@ def extract_package(archive, stage):
         launcher.chmod(launcher.stat().st_mode | 0o100)
 
 
+def workspace_path(name):
+    path = PurePosixPath(name)
+    if (len(path.parts) < 2 or path.parts[0] not in ("建站项目", "Codex工作目录")
+            or ".." in path.parts or "\\" in name or ":" in name):
+        raise ValueError(f"工作目录路径无效 {name}")
+    return Path(*path.parts)
+
+
+def restore_workspaces(downloads, package, manifest):
+    base = manifest["project_files"]
+    base_path = downloads / base["name"]
+    update = manifest["workspace_update"]
+    delta_path = downloads / update["name"]
+    copy_verified(base_path, base)
+    copy_verified(delta_path, update)
+    root = package / "建站工作目录"
+    with ZipFile(base_path) as archive:
+        for entry in archive.infolist():
+            if entry.is_dir():
+                continue
+            target = root / workspace_path(entry.filename)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with archive.open(entry) as src, target.open("xb") as out:
+                shutil.copyfileobj(src, out, 8 * 1024 * 1024)
+    with ZipFile(delta_path) as archive:
+        changes = json.loads(archive.read("changes.json"))
+        if changes["base_sha256"] != base["sha256"]:
+            raise ValueError("建站工作目录的基础包与更新包不匹配")
+        for item in changes["removed"]:
+            (root / workspace_path(item)).unlink()
+        for item in changes["changed"]:
+            path = item["path"]
+            target = root / workspace_path(path)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            member = archive.getinfo("files/" + path)
+            with archive.open(member) as src, target.open("wb") as out:
+                shutil.copyfileobj(src, out, 8 * 1024 * 1024)
+            copy_verified(target, {"size": member.file_size, "sha256": item["sha256"]})
+    if sum(path.is_file() for path in root.rglob("*")) != update["files"]:
+        raise ValueError("恢复后的工作目录数量与清单不一致")
+    print(f"已恢复 {update['files']} 份建站工作文件", flush=True)
+
+
 def prepare(downloads, target, manifest):
     target = target.resolve()
     if target.exists():
@@ -107,6 +150,8 @@ def prepare(downloads, target, manifest):
             apply_update(update_path, folder, manifest["restore"])
         finally:
             sys.path.pop(0)
+        if "workspace_update" in manifest:
+            restore_workspaces(downloads, package, manifest)
         if target.exists():
             raise ValueError(f"请选择新的安装文件夹 {target}")
         package.rename(target)

@@ -4,7 +4,12 @@
     "databases": 15,
     "originals": 325,
     "media": 10790,
-    "restore_bytes": 21554399133,
+    "restore_bytes": 21556459421,
+    "words": 81919,
+    "projects": 10,
+    "messages": 1983,
+    "created": "2026-11-22T17:45:50+08:00",
+    "version": "2.9.71",
     "libraries": [
       "包装袋",
       "电池",
@@ -21,9 +26,7 @@
       "价值投资资料",
       "B2C 建站资料",
       "Skills 技能包"
-    ],
-    "version": "2.9.71",
-    "created": "2026-11-22 10:20:56"
+    ]
   },
   "restore": {
     "name": "勋的软件-Win11-Mac.zip",
@@ -105,26 +108,41 @@
         "size": 1549884071,
         "sha256": "850e77f3f8b35d5061bb2a489f326b366c2a1c0ddd7b42aecce3335bbe59a212"
       }
-    ]
+    ],
+    "release_tag": "v2.9.71"
   },
   "program": {
-    "name": "xun-program-2.9.71-compact.zip",
-    "size": 88262968,
-    "sha256": "81c2d12aae7f294b4873c957c5e76688b0787bdd54e2ef4793e96f286a2844b9"
+    "name": "xun-program-2.9.71-2026-11-22-1745.zip",
+    "size": 87801472,
+    "sha256": "63e47a88cb0ef190f90867df73cfbf766c69bbe5bde033063aee0dcf770bbf02",
+    "release_tag": "backup-2026-11-22-1745"
   },
   "project_files": {
     "name": "xun-project-files-2.9.71.zip",
     "size": 1221572309,
     "sha256": "20c9872a116a09c162d2ebcb9fcfb5e04d35f87fa601922942daafdd622b3da4",
-    "files": 6499
+    "files": 6499,
+    "release_tag": "v2.9.71"
   },
   "records_update": {
-    "name": "xun-records-2.9.71-compact-final.zip",
-    "created": "2026-11-22T12:32:27+08:00",
-    "size": 2949085,
-    "sha256": "ec316148879b52f77d19ab98c2bcee7b5a991be330cfefc7c4347271d199442c",
+    "name": "xun-records-2026-11-22-1745.zip",
+    "size": 5178003,
+    "sha256": "f58e25affdfbc73aaf201e98b10e3e98495c9c694f9e8374ff2b3e9b6cc26486",
+    "created": "2026-11-22T17:45:50+08:00",
+    "release_tag": "backup-2026-11-22-1745",
     "databases": 15,
     "added_files": 0,
     "removed_files": 0
+  },
+  "release_tag": "backup-2026-11-22-1745",
+  "created": "2026-11-22T17:45:50+08:00",
+  "workspace_update": {
+    "name": "xun-workspace-update-2026-11-22-1745.zip",
+    "size": 6474249,
+    "sha256": "7f4b6c0e8f2e648320c122210c106bf5b689b3474128386b11c2890dfb2d7ac5",
+    "release_tag": "backup-2026-11-22-1745",
+    "files": 6679,
+    "changed": 207,
+    "removed": 0
   }
 }
